@@ -1,5 +1,0 @@
-chainlit
-openai-agents
-python-dotenv
-pydantic
-os
