@@ -71,77 +71,198 @@ async def output_guardrail_check(ctx:RunContextWrapper[IsRelevant],agent,output)
     
     
     
-@function_tool
-def make_folder(folder:None|str=None,content:str|None=None,file:str|None=None):
-    """Make a folder in the user specified directory
-    and make file or a folder in that directory.This tool can be used to edit a file also"""
+# @function_tool
+# def make_folder(folder:None|str=None,content:str|None=None,file:str|None=None):
+#     """Make a folder in the user specified directory
+#     and make file or a folder in that directory.This tool can be used to edit a file also"""
     
-    if os.path.exists(f"C:/Users/Digi/Desktop/Python"):
-        os.mkdir(f"C:/Users/Digi/Desktop/Python/{folder}")
-        if os.path.exists(f"C:/Users/Digi/Desktop/Python/{folder}"):
-            file_name=os.path.join(f"C:/Users/Digi/Desktop/Python/{folder}",file)
-            with open(file_name,"w") as f:
-             f.write(content)
-             return "File made"
-        else:
-            return "File does not made"
-        return "folder succesfully made"
-    else:
-        return "Directory not found"
+#     if os.path.exists(f"C:/Users/Digi/Desktop/Python"):
+#         os.mkdir(f"C:/Users/Digi/Desktop/Python/{folder}")
+#         if os.path.exists(f"C:/Users/Digi/Desktop/Python/{folder}"):
+#             file_name=os.path.join(f"C:/Users/Digi/Desktop/Python/{folder}",file)
+#             with open(file_name,"w") as f:
+#              f.write(content)
+#              return "File made"
+#         else:
+#             return "File does not made"
+#         return "folder succesfully made"
+#     else:
+#         return "Directory not found"
     
     
-@function_tool 
-def delete_folder(folder):
-    """To remove the directory"""
-    files = os.listdir(f"C:/Users/Digi/Desktop/Python/{folder}")
-    if len(files)>0:
-     for i in files:
-         os.remove(f"C:/Users/Digi/Desktop/Python/{folder}/{i}")
-    if os.path.exists(f"C:/Users/Digi/Desktop/Python/{folder}"):
-        os.rmdir(f"C:/Users/Digi/Desktop/Python/{folder}")
-        return "Folder deleted successfully"
-    else:
-        "Folder does not removed succesfully"
+# @function_tool 
+# def delete_folder(folder):
+#     """To remove the directory"""
+#     files = os.listdir(f"C:/Users/Digi/Desktop/Python/{folder}")
+#     if len(files)>0:
+#      for i in files:
+#          os.remove(f"C:/Users/Digi/Desktop/Python/{folder}/{i}")
+#     if os.path.exists(f"C:/Users/Digi/Desktop/Python/{folder}"):
+#         os.rmdir(f"C:/Users/Digi/Desktop/Python/{folder}")
+#         return "Folder deleted successfully"
+#     else:
+#         "Folder does not removed succesfully"
     
           
 
-@function_tool
-def make_file(file_name,folder:None|str=None,content:str|None=None):
-    '''This is a tool to make a file
-    Parameters:
+# @function_tool
+# def make_file(file_name,folder:None|str=None,content:str|None=None):
+#     '''This is a tool to make a file
+#     Parameters:
     
-    file_name
-    '''
-    if os.path.exists(f"c:/Users/Digi/Desktop/Python/{folder}"):
-     file_path = os.path.join(f"c:/Users/Digi/Desktop/Python/{folder}", file_name)
-     with open(file_path,"w") as f:
-        f.write(content)
-        return f"{file_name} added succesfully"
+#     file_name
+#     '''
+#     if os.path.exists(f"c:/Users/Digi/Desktop/Python/{folder}"):
+#      file_path = os.path.join(f"c:/Users/Digi/Desktop/Python/{folder}", file_name)
+#      with open(file_path,"w") as f:
+#         f.write(content)
+#         return f"{file_name} added succesfully"
+
+# @function_tool
+# def  show_folders():
+#     path="c:/Users/Digi/Desktop/Python/"
+#     folder=os.listdir(path)
+    
+#     if len(folder)>0 and os.path.exists(path):
+#         return f"Files:{folder}"
+#     else :
+#         return "No files in the directory"
+
+
+# @function_tool 
+# def deletefile(file_name:str):
+#     '''This is a tool to delete the file from the existing folder.
+#     Parameters:
+#     file_name:str
+#     '''
+
+#     if os.path.exists(f"c:/Users/Digi/Desktop/Python/{file_name}"):
+#         os.remove(f"c:/Users/Digi/Desktop/Python/{file_name}")
+#         return f"{file_name} removed succesfully"
+  
+#     else :
+#      return "File doesnot exists"
+# Helper to get the base path reliably
+def get_base_path():
+    return os.getcwd()
 
 @function_tool
-def  show_folders():
-    path="c:/Users/Digi/Desktop/Python/"
-    folder=os.listdir(path)
-    
-    if len(folder)>0 and os.path.exists(path):
-        return f"Files:{folder}"
-    else :
-        return "No files in the directory"
+def make_folder(folder: str, content: str | None = None, file: str | None = None):
+    """
+    Make a folder in the current directory. 
+    Optionally creates a file inside that folder if 'file' and 'content' are provided.
+    """
+    # 1. Dynamic Path Construction
+    base_path = get_base_path()
+    folder_path = os.path.join(base_path, folder)
+
+    try:
+        # Create folder if it doesn't exist
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+            
+        # If user also wants to create a file inside it
+        if file and content:
+            file_path = os.path.join(folder_path, file)
+            with open(file_path, "w") as f:
+                f.write(content)
+            return f"Folder '{folder}' created and file '{file}' added successfully."
+        
+        return f"Folder '{folder}' created successfully."
+
+    except Exception as e:
+        return f"Error creating folder/file: {str(e)}"
 
 
 @function_tool 
-def deletefile(file_name:str):
-    '''This is a tool to delete the file from the existing folder.
-    Parameters:
-    file_name:str
-    '''
+def delete_folder(folder: str):
+    """
+    Removes a directory and all files inside it.
+    """
+    base_path = get_base_path()
+    folder_path = os.path.join(base_path, folder)
 
-    if os.path.exists(f"c:/Users/Digi/Desktop/Python/{file_name}"):
-        os.remove(f"c:/Users/Digi/Desktop/Python/{file_name}")
-        return f"{file_name} removed succesfully"
-  
-    else :
-     return "File doesnot exists"
+    if not os.path.exists(folder_path):
+        return "Folder not found."
+
+    try:
+        # 1. List all files in the folder
+        files = os.listdir(folder_path)
+        
+        # 2. Delete all files inside first (cannot remove non-empty dir)
+        for filename in files:
+            file_path = os.path.join(folder_path, filename)
+            # Check if it's a file before removing
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+        
+        # 3. Remove the now empty directory
+        os.rmdir(folder_path)
+        return "Folder deleted successfully"
+        
+    except Exception as e:
+        return f"Error deleting folder: {str(e)}"
+
+
+@function_tool
+def make_file(file_name: str, folder: str | None = None, content: str | None = None):
+    """
+    Creates a file. If 'folder' is provided, creates it inside that folder.
+    Otherwise creates it in the root directory.
+    """
+    base_path = get_base_path()
+    
+    # Determine where to put the file
+    if folder:
+        target_dir = os.path.join(base_path, folder)
+        # Create the folder if it doesn't exist yet (Safety check)
+        if not os.path.exists(target_dir):
+            os.makedirs(target_dir)
+    else:
+        target_dir = base_path
+
+    file_path = os.path.join(target_dir, file_name)
+    
+    try:
+        with open(file_path, "w") as f:
+            # Handle case where content might be None
+            f.write(content if content else "") 
+        return f"{file_name} added successfully at {target_dir}"
+    except Exception as e:
+        return f"Error creating file: {str(e)}"
+
+
+@function_tool
+def show_folders():
+    """Lists all files and folders in the current working directory."""
+    path = get_base_path()
+    
+    if os.path.exists(path):
+        items = os.listdir(path)
+        if items:
+            return f"Contents of {path}: {items}"
+        else:
+            return "Directory is empty."
+    else:
+        return "Directory path does not exist."
+
+
+@function_tool 
+def deletefile(file_name: str):
+    """
+    Deletes a file from the current working directory.
+    """
+    base_path = get_base_path()
+    file_path = os.path.join(base_path, file_name)
+
+    if os.path.exists(file_path):
+        try:
+            os.remove(file_path)
+            return f"{file_name} removed successfully"
+        except Exception as e:
+            return f"Error removing file: {str(e)}"
+    else:
+        return "File does not exist"        
         
 Chatbot_Agent=Agent(name="ChatBot Agent",
                     instructions="You have to answer user queries politely",             
@@ -170,8 +291,8 @@ async def on_chat_start(message="Hello,How I can help you."):
 @cl.on_message
 async def on_message(msg: cl.Message):
     userhistory:list=cl.user_session.get("history")
-    history:list=userhistory.append(msg.content)
-    cl.user_session.set("history", history)
+    userhistory.append(msg.content)
+    cl.user_session.set("history", userhistory)
  
 
     try:
